@@ -40,8 +40,7 @@ const ActiveRoom = ({
   const { data, error, isLoading } = api.rooms.joinRoom.useQuery({ roomName });
 
   const router = useRouter();
-  if(isLoading) return <div>Loading...</div>
-  if (error) router.push("/");
+
   const { region, hq } = router.query;
 
   //   const liveKitUrl = useServerUrl(region as string | undefined);
@@ -194,6 +193,9 @@ const ActiveRoom = ({
       pusher.unsubscribe(roomName);
     };
   }, []);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) router.push("/");
 
   return (
     <>
