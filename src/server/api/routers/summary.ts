@@ -7,7 +7,7 @@ const configuration = new Configuration({
   apiKey: process.env.OPEN_API_SECRET,
 });
 const openai = new OpenAIApi(configuration);
-export const roomsRouter = createTRPCRouter({
+export const summaryRouter = createTRPCRouter({
   getRoomSummary: protectedProcedure
     .input(
       z.object({
@@ -33,6 +33,7 @@ export const roomsRouter = createTRPCRouter({
         utterance: transcript.transcription,
         timestamp: transcript.createdAt.toISOString(),
       }));
+      console.log(chatLog);
       if (chatLog.length === 0) {
         return null;
       }

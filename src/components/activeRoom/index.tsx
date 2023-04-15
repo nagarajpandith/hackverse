@@ -113,12 +113,7 @@ const ActiveRoom = ({
         const received = message && JSON.parse(message?.data);
         const transcript = received.channel?.alternatives[0].transcript;
 
-        if (
-          transcript !== "" &&
-          transcript !== undefined &&
-          transcript !== null &&
-          transcript !== transcription
-        ) {
+        if (transcript !== "" && transcript !== undefined) {
           pusherMutation.mutate({
             message: transcript,
             roomName: roomName,

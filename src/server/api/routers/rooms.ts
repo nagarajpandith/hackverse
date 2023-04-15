@@ -104,4 +104,27 @@ export const roomsRouter = createTRPCRouter({
 
     return result;
   }),
+
+  getRoomsByUser: protectedProcedure.query(async ({ ctx }) => {
+    const rooms = await ctx.prisma.room.findMany({
+      where: {
+        OR: [
+          {
+            Owner: {
+              id: ctx.session.user.id,
+            },
+          },
+          {
+            Participant: {
+              some: {
+                UserId: ctx.session.user.id,
+              },
+            },
+          },
+        ],
+      },
+    });
+
+    return rooms;
+  }),
 });
