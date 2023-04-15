@@ -40,6 +40,8 @@ const ActiveRoom = ({
   const { data, error, isLoading } = api.rooms.joinRoom.useQuery({ roomName });
 
   const router = useRouter();
+  if(isLoading) return <div>Loading...</div>
+  if (error) router.push("/");
   const { region, hq } = router.query;
 
   //   const liveKitUrl = useServerUrl(region as string | undefined);
@@ -74,6 +76,7 @@ const ActiveRoom = ({
       isFinal: boolean;
     }[]
   >([]);
+
   const [caption, setCaption] = useState({
     sender: "",
     message: "",
@@ -134,6 +137,7 @@ const ActiveRoom = ({
       socketRef.current = socket;
     });
   }, [selectedLanguage]);
+
   useEffect(() => {
     async function translateText() {
       console.info("transcriptionQueue", transcriptionQueue);
@@ -190,9 +194,15 @@ const ActiveRoom = ({
       pusher.unsubscribe(roomName);
     };
   }, []);
+
   return (
     <>
-      {data && (
+      {error && (
+        <div className="flex h-full w-full items-center justify-center bg-red-500 text-white">
+          {error.message}
+        </div>
+      )}
+      {!error && data && (
         <LiveKitRoom
           token={data.accessToken}
           serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_API_HOST}

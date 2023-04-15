@@ -24,6 +24,16 @@ export const roomsRouter = createTRPCRouter({
       })
     )
     .query(async ({ input, ctx }) => {
+      const roomExists = await ctx.prisma.room.findUnique({
+        where: {
+          name: input.roomName,
+        },
+      });
+
+      if (!roomExists) {
+        throw new Error("Room does not exist");
+      }
+
       const identity = ctx.session.user.id;
       const name = ctx.session.user.name;
 

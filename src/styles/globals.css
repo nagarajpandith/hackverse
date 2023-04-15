@@ -22,3 +22,7 @@ body {
   display: flex;
   flex-direction: row;
 }
+
+.gradient-text {
+  @apply bg-gradient-to-r from-primary via-secondary to-tertiary bg-clip-text text-transparent;
+}
