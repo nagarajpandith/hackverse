@@ -8,6 +8,7 @@ import { FcGoogle } from "react-icons/fc";
 import JoinRoom from "@/components/join";
 import Image from "next/image";
 import Head from "next/head";
+import Navbar from "@/components/navbar";
 
 function ConnectionTab() {
   const { data: session, status } = useSession();
@@ -34,6 +35,7 @@ function ConnectionTab() {
         <meta name="description" content="AudioWiz" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <Navbar status={status} session={session} />
       <div className="isolate overflow-x-hidden">
         <div className="flex h-screen w-screen flex-col items-center justify-center space-y-4 p-5 text-center md:flex-row">
           <div className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden opacity-90 blur-3xl sm:top-[-20rem]">

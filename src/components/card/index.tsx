@@ -4,12 +4,14 @@ import { IoDocumentTextOutline } from "react-icons/io5";
 
 function Card({
   room,
+  selectedCode,
 }: {
   room: {
     name: string;
     slug: string | null;
     createdAt: Date;
   };
+  selectedCode: string;
 }) {
   let [isOpen, setIsOpen] = useState(false);
 
@@ -47,7 +49,7 @@ function Card({
         </div>
 
         {isOpen && (
-          <Modal roomName={room.name} setIsOpen={setIsOpen} visible={isOpen} />
+          <Modal selectedCode={selectedCode} roomName={room.name} setIsOpen={setIsOpen} visible={isOpen} />
         )}
       </div>
     </div>

@@ -1,4 +1,7 @@
 import { Tab } from "@headlessui/react";
+import { setCORS } from "google-translate-api-browser";
+import { useEffect, useState } from "react";
+const translate = setCORS("https://cors-proxy.fringe.zone/");
 
 function classNames(...classes: (string | undefined)[]) {
   return classes.filter(Boolean).join(" ");
@@ -7,11 +10,37 @@ function classNames(...classes: (string | undefined)[]) {
 export default function Tabs({
   summary,
   transcriptions,
+  selectedCode,
 }: {
   summary: string;
   transcriptions: string[];
+  selectedCode: string;
 }) {
-  console.log(transcriptions)
+  const utterances = transcriptions.map((transcription) => {
+    return {
+      utterance: transcription,
+    };
+  });
+
+  const [translatedTranscriptions, setTranslatedTranscriptions] = useState<
+    string[]
+  >([]);
+
+  async function translateText(text: string) {
+    console.log("inside translate");
+
+    const res = await translate(text, {
+      //@ts-ignore
+      to: selectedCode.split("-")[0],
+    });
+
+    return res.text;
+  }
+
+  // if (selectedCode !== "en" && utterances.length > 0) {
+  //   translateText();
+  // }
+
   return (
     <div className="w-full max-w-md px-2 py-16 sm:px-0">
       <Tab.Group>
@@ -54,7 +83,10 @@ export default function Tabs({
                 <div className="bg-white-opacity-5 w-full p-5" key={index}>
                   <h2 className="text-white">{transcription?.speaker}</h2>
                   <p className="font-lg text-white">
-                    {transcription.utterance}
+                    {/* {transcription.utterance} */}
+                    {translatedTranscriptions[index]
+                      ? translatedTranscriptions[index]
+                      : transcription.utterance}
                   </p>
                   <div className="text-sm font-bold text-gray-100 text-opacity-50">
                     {new Date(transcription.timestamp).toLocaleDateString(

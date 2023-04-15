@@ -8,12 +8,14 @@ type ModalProps = {
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   roomName: string;
   visible: boolean;
+  selectedCode: string;
 };
 
 const Modal: FunctionComponent<ModalProps> = ({
   setIsOpen,
   roomName,
   visible,
+  selectedCode,
 }) => {
   const { data, error, isLoading } = api.summary.getRoomSummary.useQuery({
     roomName,
@@ -53,7 +55,7 @@ const Modal: FunctionComponent<ModalProps> = ({
               <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white bg-opacity-10 p-6 text-left align-middle shadow-xl backdrop-blur-2xl backdrop-filter transition-all">
                 <Dialog.Title
                   as="h3"
-                  className="text-white text-lg font-medium leading-6"
+                  className="text-lg font-medium leading-6 text-white"
                 >
                   Meeting Details
                 </Dialog.Title>
@@ -64,6 +66,7 @@ const Modal: FunctionComponent<ModalProps> = ({
                     <div className="text-sm text-gray-100 text-opacity-50">
                       {data.output[0].contents.length > 1 && (
                         <Tabs
+                          selectedCode={selectedCode}
                           summary={data.output[1].contents[0]?.utterance}
                           transcriptions={data.input}
                         />
