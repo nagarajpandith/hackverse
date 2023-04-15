@@ -69,6 +69,8 @@ const ActiveRoom = ({
       isFinal: boolean;
     }[]
   >([]);
+
+  const pusherMutation = api.pusher.send.useMutation();
   useEffect(() => {
     console.log("Running transcription");
     navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
@@ -104,6 +106,11 @@ const ActiveRoom = ({
         if (transcript) {
           console.log(transcript);
           setTranscription(transcript);
+          pusherMutation.mutate({
+            message: transcript,
+            roomName: roomName,
+            isFinal: true,
+          });
         }
       };
 
