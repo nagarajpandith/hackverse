@@ -5,3 +5,20 @@
 body {
   @apply bg-black;
 }
+
+.closed-captions-wrapper {
+  width: 100%;
+  position: absolute;
+  bottom: 20%;
+  display: flex;
+  justify-content: center;
+  z-index: 100;
+  font-size: 18px;
+}
+
+.closed-captions-container {
+  background: black;
+  color: white;
+  display: flex;
+  flex-direction: row;
+}

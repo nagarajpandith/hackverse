@@ -9,7 +9,7 @@ import { LogLevel, RoomOptions, VideoPresets } from "livekit-client";
 
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { DebugMode } from "../../lib/Debug";
 import { api } from "@/utils/api";
 import { signIn, useSession } from "next-auth/react";
@@ -88,8 +88,7 @@ const Home: NextPage = () => {
           <div className="lk-prejoin flex flex-col gap-3">
             <div className="text-2xl font-bold">Hey, {session?.user.name}!</div>
             <div className="text-sm font-normal">
-              You are joining{" "}
-              <span className="font-semibold">{roomName}</span>
+              You are joining <span className="font-semibold">{roomName}</span>
             </div>
             <label>
               <span>Choose your Language</span>
@@ -168,6 +167,53 @@ const ActiveRoom = ({
     };
   }, [userChoices, hq]);
 
+  const [transcription, setTranscription] = useState("");
+  const socketRef = useRef<WebSocket | null>(null);
+
+  useEffect(() => {
+    console.log("Running transcription");
+
+    //Add microphone access
+    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+      if (!MediaRecorder.isTypeSupported("audio/webm"))
+        return alert("Browser not supported");
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: "audio/webm",
+      });
+
+      //create a websocket connection
+      const socket = new WebSocket("ws://localhost:4000");
+      socket.onopen = () => {
+        console.log({ event: "onopen" });
+        mediaRecorder.addEventListener("dataavailable", async (event) => {
+          if (event.data.size > 0 && socket.readyState === 1) {
+            socket.send(event.data);
+          }
+        });
+        mediaRecorder.start(1000);
+      };
+
+      socket.onmessage = (message) => {
+        const received = message && JSON.parse(message?.data);
+        const transcript = received.channel?.alternatives[0].transcript;
+        if (transcript) {
+          console.log(transcript);
+          setTranscription(transcript);
+        }
+      };
+
+      socket.onclose = () => {
+        console.log({ event: "onclose" });
+      };
+
+      socket.onerror = (error) => {
+        console.log({ event: "onerror", error });
+      };
+
+      socketRef.current = socket;
+    });
+  });
+
   return (
     <>
       {data && (
@@ -179,6 +225,11 @@ const ActiveRoom = ({
           audio={userChoices.audioEnabled}
           onDisconnected={onLeave}
         >
+          <div className="closed-captions-wrapper z-50">
+            <div className="closed-captions-container">
+              <div className="closed-captions-text">{transcription}</div>
+            </div>
+          </div>
           <VideoConference chatMessageFormatter={formatChatMessageLinks} />
           <DebugMode logLevel={LogLevel.info} />
         </LiveKitRoom>
