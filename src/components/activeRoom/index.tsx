@@ -9,7 +9,7 @@ import {
 } from "@livekit/components-react";
 import { setCORS } from "google-translate-api-browser";
 
-const translate = setCORS("https://corsanywhere.herokuapp.com/");
+const translate = setCORS("https://cors-proxy.fringe.zone/");
 
 import {
   LogLevel,
