@@ -6,8 +6,15 @@ import {
   VideoConference,
   formatChatMessageLinks,
 } from "@livekit/components-react";
-import { LogLevel, RoomOptions, VideoPresets } from "livekit-client";
+import {
+  LogLevel,
+  Room,
+  RoomEvent,
+  RoomOptions,
+  VideoPresets,
+} from "livekit-client";
 import { useRouter } from "next/router";
+import Pusher from "pusher-js";
 import { useEffect, useMemo, useRef, useState } from "react";
 type ActiveRoomProps = {
   userChoices: LocalUserChoices;
@@ -54,80 +61,88 @@ const ActiveRoom = ({
 
   const [transcription, setTranscription] = useState("");
   const socketRef = useRef<WebSocket | null>(null);
-  const [isMicEnabled, setIsMicEnabled] = useState(false);
-
-  useEffect(() => {
-    console.log("hello");
-    // get button with data-lk-source = microphone
-    const button = document.querySelector(
-      'button[data-lk-source="microphone"]'
-    );
-    console.info(button);
-    console.log(button?.getAttribute("data-lk-enabled"));
-    button?.addEventListener("click", () => {
-      console.log("man wtf");
-      if (button?.getAttribute("data-lk-enabled") == "true") {
-        setIsMicEnabled(true);
-      } else {
-        setIsMicEnabled(false);
-      }
-    });
-  }, []);
-
+  const [transcriptionQueue, setTranscriptionQueue] = useState<
+    {
+      sender: string;
+      message: string;
+      senderId: string;
+      isFinal: boolean;
+    }[]
+  >([]);
   useEffect(() => {
     console.log("Running transcription");
-
-    if (isMicEnabled) {
-      //Add microphone access
-      navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
-        if (!MediaRecorder.isTypeSupported("audio/webm"))
-          return alert("Browser not supported");
-        const mediaRecorder = new MediaRecorder(stream, {
-          mimeType: "audio/webm",
-        });
-
-        const webSocketUrl =
-          selectedLanguage == "en-US"
-            ? "wss://api.deepgram.com/v1/listen?model=nova"
-            : `wss://api.deepgram.com/v1/listen?language=${selectedLanguage}`;
-
-        const socket = new WebSocket(webSocketUrl, [
-          "token",
-          process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY!,
-        ]);
-
-        socket.onopen = () => {
-          console.log({ event: "onopen" });
-          mediaRecorder.addEventListener("dataavailable", async (event) => {
-            if (event.data.size > 0 && socket.readyState === 1) {
-              socket.send(event.data);
-            }
-          });
-          mediaRecorder.start(1000);
-        };
-
-        socket.onmessage = (message) => {
-          const received = message && JSON.parse(message?.data);
-          const transcript = received.channel?.alternatives[0].transcript;
-          if (transcript) {
-            console.log(transcript);
-            setTranscription(transcript);
-          }
-        };
-
-        socket.onclose = () => {
-          console.log({ event: "onclose" });
-        };
-
-        socket.onerror = (error) => {
-          console.log({ event: "onerror", error });
-        };
-
-        socketRef.current = socket;
+    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+      if (!MediaRecorder.isTypeSupported("audio/webm"))
+        return alert("Browser not supported");
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: "audio/webm",
       });
-    }
-  }, [selectedLanguage]);
 
+      const webSocketUrl =
+        selectedLanguage == "en-US"
+          ? "wss://api.deepgram.com/v1/listen?model=nova"
+          : `wss://api.deepgram.com/v1/listen?language=${selectedLanguage}`;
+
+      const socket = new WebSocket(webSocketUrl, [
+        "token",
+        process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY!,
+      ]);
+
+      socket.onopen = () => {
+        console.log({ event: "onopen" });
+        mediaRecorder.addEventListener("dataavailable", async (event) => {
+          if (event.data.size > 0 && socket.readyState === 1) {
+            socket.send(event.data);
+          }
+        });
+        mediaRecorder.start(1000);
+      };
+
+      socket.onmessage = (message) => {
+        const received = message && JSON.parse(message?.data);
+        const transcript = received.channel?.alternatives[0].transcript;
+        if (transcript) {
+          console.log(transcript);
+          setTranscription(transcript);
+        }
+      };
+
+      socket.onclose = () => {
+        console.log({ event: "onclose" });
+      };
+
+      socket.onerror = (error) => {
+        console.log({ event: "onerror", error });
+      };
+
+      socketRef.current = socket;
+    });
+  }, [selectedLanguage]);
+  useEffect(() => {
+    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY as string, {
+      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER as string,
+    });
+    const channel = pusher.subscribe(roomName);
+    channel.bind(
+      "transcribe-event",
+      function (data: {
+        sender: string;
+        message: string;
+        senderId: string;
+        isFinal: boolean;
+      }) {
+        if (data.isFinal && userId !== data.senderId) {
+          setTranscriptionQueue((prev) => {
+            return [...prev, data];
+          });
+        }
+      }
+    );
+
+    return () => {
+      pusher.unsubscribe(roomName);
+    };
+  }, []);
   return (
     <>
       {data && (

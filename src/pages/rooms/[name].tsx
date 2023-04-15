@@ -1,10 +1,11 @@
 import { PreJoin, LocalUserChoices } from "@livekit/components-react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { AiFillSetting } from "react-icons/ai";
 import ActiveRoom from "@/components/activeRoom";
+import Pusher from "pusher";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -13,6 +14,8 @@ const Home: NextPage = () => {
   const [preJoinChoices, setPreJoinChoices] = useState<
     LocalUserChoices | undefined
   >(undefined);
+ 
+
   const [selectedCode, setSelectedCode] = useState("en");
   if (status === "loading") return <div>Loading...</div>;
   if (!session) signIn("google");
