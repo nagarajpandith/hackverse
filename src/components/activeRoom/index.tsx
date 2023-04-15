@@ -113,12 +113,18 @@ const ActiveRoom = ({
         const received = message && JSON.parse(message?.data);
         const transcript = received.channel?.alternatives[0].transcript;
 
-        if (transcript !== "" && transcript !== undefined) {
+        if (
+          transcript !== "" &&
+          transcript !== undefined &&
+          transcript !== null &&
+          transcript !== transcription
+        ) {
           pusherMutation.mutate({
             message: transcript,
             roomName: roomName,
             isFinal: true,
           });
+          setTranscription(transcript);
         }
       };
 
@@ -202,6 +208,14 @@ const ActiveRoom = ({
         >
           <div className="closed-captions-wrapper z-50">
             <div className="closed-captions-container">
+              {caption?.message ? (
+                <>
+                  <div className="closed-captions-username">
+                    {caption.sender}
+                  </div>
+                  <span>:&nbsp;</span>
+                </>
+              ) : null}
               <div className="closed-captions-text">{caption.message}</div>
             </div>
           </div>
