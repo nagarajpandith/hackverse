@@ -4,6 +4,7 @@ import { api } from "@/utils/api";
 import Navbar from "@/components/navbar";
 import { AiFillSetting } from "react-icons/ai";
 import { useState } from "react";
+import Footer from "@/components/footer";
 
 function profile() {
   const { data: session, status } = useSession();
@@ -52,7 +53,7 @@ function profile() {
         </div>
 
         <label className="flex items-center justify-center gap-2">
-          <span className="my-3 flex items-center space-x-2 text-center text-xs lg:text-sm">
+          <span className="flex items-center space-x-2 text-center text-xs lg:text-sm">
             <AiFillSetting />
             <a>Switch Language</a>
           </span>
@@ -67,7 +68,7 @@ function profile() {
           </select>
         </label>
 
-        <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center justify-center mt-5">
           <a className="text-lg font-bold text-secondary">Your Rooms</a>
           {isLoading && <div>Loading...</div>}
           {ownedRooms.length === 0 && (
@@ -84,7 +85,7 @@ function profile() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center justify-center mt-5">
           <a className="text-lg font-bold text-secondary">
             Rooms you are a part of
           </a>
@@ -103,6 +104,8 @@ function profile() {
           </div>
         </div>
       </div>
+
+      <Footer />
     </>
   );
 }

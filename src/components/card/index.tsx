@@ -49,7 +49,12 @@ function Card({
         </div>
 
         {isOpen && (
-          <Modal selectedCode={selectedCode} roomName={room.name} setIsOpen={setIsOpen} visible={isOpen} />
+          <Modal
+            selectedCode={selectedCode}
+            roomName={room.name}
+            setIsOpen={setIsOpen}
+            visible={isOpen}
+          />
         )}
       </div>
     </div>
