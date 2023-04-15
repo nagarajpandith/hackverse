@@ -37,9 +37,41 @@ export default function Tabs({
     return res.text;
   }
 
-  // if (selectedCode !== "en" && utterances.length > 0) {
-  //   translateText();
-  // }
+  useEffect(() => {
+    async function translateUtterances() {
+      const translatedUtterances = await Promise.all(
+        utterances.map(async (utterance) => {
+          const translatedUtterance = await translateText(
+            //@ts-ignore
+            utterance.utterance.utterance
+          );
+          return {
+            utterance: JSON.stringify(translatedUtterance),
+          };
+        })
+      );
+
+      setTranslatedTranscriptions(
+        translatedUtterances.map((utterance) => utterance.utterance)
+      );
+    }
+
+    if (selectedCode !== "en" && utterances.length > 0) {
+      translateUtterances();
+    }
+  }, [selectedCode]);
+
+  const [translatedSummary, setTranslatedSummary] = useState<string>("");
+  useEffect(() => {
+    async function translateSummary() {
+      const translatedSummary = await translateText(summary);
+      setTranslatedSummary(translatedSummary);
+    }
+
+    if (selectedCode !== "en") {
+      translateSummary();
+    }
+  }, [selectedCode]);
 
   return (
     <div className="w-full max-w-md px-2 py-16 sm:px-0">
@@ -75,7 +107,9 @@ export default function Tabs({
         </Tab.List>
         <Tab.Panels className="mt-2 space-x-10">
           <Tab.Panel>
-            <p className="p-5 text-lg text-white">{summary}</p>
+            <p className="p-5 text-lg text-white">
+              {translatedSummary ? translatedSummary : summary}
+            </p>
           </Tab.Panel>
           <Tab.Panel>
             {transcriptions.map((transcription: any, index) => {

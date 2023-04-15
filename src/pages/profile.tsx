@@ -4,6 +4,8 @@ import { api } from "@/utils/api";
 import Navbar from "@/components/navbar";
 import { AiFillSetting } from "react-icons/ai";
 import { useState } from "react";
+import Footer from "@/components/footer";
+import Head from "next/head";
 
 function profile() {
   const { data: session, status } = useSession();
@@ -43,6 +45,11 @@ function profile() {
 
   return (
     <>
+      <Head>
+        <title>AudioWiz | Profile</title>
+        <meta name="description" content="AudioWiz" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <Navbar status={status} session={session} />
       <div className="mt-10 flex flex-col bg-black p-10 text-gray-100 lg:p-20">
         <div className="my-5 flex items-center justify-center">
@@ -52,7 +59,7 @@ function profile() {
         </div>
 
         <label className="flex items-center justify-center gap-2">
-          <span className="my-3 flex items-center space-x-2 text-center text-xs lg:text-sm">
+          <span className="flex items-center space-x-2 text-center text-xs lg:text-sm">
             <AiFillSetting />
             <a>Switch Language</a>
           </span>
@@ -67,7 +74,7 @@ function profile() {
           </select>
         </label>
 
-        <div className="flex flex-col items-center justify-center">
+        <div className="mt-5 flex flex-col items-center justify-center">
           <a className="text-lg font-bold text-secondary">Your Rooms</a>
           {isLoading && <div>Loading...</div>}
           {ownedRooms.length === 0 && (
@@ -84,7 +91,7 @@ function profile() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center justify-center">
+        <div className="mt-5 flex flex-col items-center justify-center">
           <a className="text-lg font-bold text-secondary">
             Rooms you are a part of
           </a>
@@ -103,6 +110,8 @@ function profile() {
           </div>
         </div>
       </div>
+
+      <Footer />
     </>
   );
 }

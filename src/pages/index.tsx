@@ -9,6 +9,7 @@ import JoinRoom from "@/components/join";
 import Image from "next/image";
 import Head from "next/head";
 import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
 
 function ConnectionTab() {
   const { data: session, status } = useSession();
@@ -67,51 +68,15 @@ function ConnectionTab() {
           </div>
 
           <div className="w-full max-w-md space-y-4">
-            <div className="flex items-center space-x-2">
-              <Image src="/logo.png" alt="Logo" width={80} height={80} />
-              <a className="gradient-text text-7xl font-bold">AudioWiz</a>
-            </div>
-
-            <div className="w-full max-w-md space-y-4">
-              <div className="flex items-center justify-center space-x-2">
-                {session ? (
-                  <>
-                    {session?.user.image && (
-                      <Image
-                        src={session?.user.image}
-                        alt="User Image"
-                        width={30}
-                        height={30}
-                        className="rounded-full"
-                      />
-                    )}
-                    <a>{session?.user.name}</a>
-                  </>
-                ) : (
-                  <>
-                    <a>Not Signed in</a>
-                    <button
-                      className="lk-button"
-                      onClick={() => {
-                        if (session) {
-                          signOut();
-                        } else {
-                          signIn("google");
-                        }
-                      }}
-                    >
-                      {session ? (
-                        "Sign Out"
-                      ) : (
-                        <div className="flex items-center space-x-2">
-                          <FcGoogle />
-                          <div>Sign In</div>
-                        </div>
-                      )}
-                    </button>
-                  </>
-                )}
+            <div className="flex items-center justify-center space-x-2">
+              <div className="flex h-10 w-10 items-center justify-center lg:h-20 lg:w-20">
+                <Image src="/logo.png" alt="Logo" width={100} height={100} />
               </div>
+              <a className="gradient-text md:text5xl text-4xl font-bold lg:text-7xl">
+                AudioWiz
+              </a>
+            </div>
+            <div>
               <div className="flex flex-col items-center justify-center space-y-4 lg:flex-row lg:space-x-4 lg:space-y-0">
                 <button onClick={createRoomHandler} className="lk-button h-fit">
                   {roomLoading ? (
@@ -156,6 +121,8 @@ function ConnectionTab() {
             </svg>
           </div>
         </div>
+
+        <Footer />
       </div>
     </>
   );
