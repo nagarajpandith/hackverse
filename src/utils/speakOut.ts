@@ -1,3 +1,4 @@
+import axios from "axios";
 import { transliterate } from "transliteration";
 
 // let lastSpokenText = "";
@@ -25,6 +26,7 @@ import { transliterate } from "transliteration";
 // };
 
 // export default speakOut;
+
 let lastSpokenText = "";
 
 export default (text: string, isEmpty: boolean, lang?: string) => {
@@ -34,10 +36,8 @@ export default (text: string, isEmpty: boolean, lang?: string) => {
   }
 
   if (isEmpty) lastSpokenText = "";
-
-  const audio = new Audio(
-    `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&q=${text}&tl=${lang}`
-  );
+  const url = `/api/speech?text=${encodeURIComponent(text)}`;
+  const audio = new Audio(url);
   audio.play();
   lastSpokenText = text;
 };
