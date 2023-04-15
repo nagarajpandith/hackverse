@@ -13,47 +13,77 @@ datasource db {
 
 // Necessary for Next auth
 model Account {
-    id                String  @id @default(cuid())
-    userId            String
-    type              String
-    provider          String
-    providerAccountId String
-    refresh_token     String? @db.Text
-    access_token      String? @db.Text
-    expires_at        Int?
-    token_type        String?
-    scope             String?
-    id_token          String? @db.Text
-    session_state     String?
-    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@unique([provider, providerAccountId])
-    @@index([userId], name: "userId")
+  @@unique([provider, providerAccountId])
+  @@index([userId], name: "userId")
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    @@index([userId], name: "userId")
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId], name: "userId")
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
+  id            String        @id @default(cuid())
+  name          String?
+  email         String?       @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  Room          Room[]
+  Participant   Participant[]
 }
 
 model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-    @@unique([identifier, token])
+  @@unique([identifier, token])
+}
+
+model Room {
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  name        String        @id @unique @default(cuid())
+  metadata    String?       @db.Text
+  slug        String?
+  OwnerId     String
+  Owner       User          @relation(fields: [OwnerId], references: [id], onDelete: Cascade)
+  summary     String?       @db.Text
+  Participant Participant[]
+
+  @@index([OwnerId])
+}
+
+model Participant {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  UserId    String
+  User      User     @relation(fields: [UserId], references: [id], onDelete: Cascade)
+  RoomName  String
+  Room      Room     @relation(fields: [RoomName], references: [name], onDelete: Cascade)
+
+  @@id([UserId, RoomName])
+  @@index([UserId])
+  @@index([RoomName])
 }
