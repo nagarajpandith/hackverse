@@ -5,6 +5,7 @@ import { useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { AiFillSetting } from "react-icons/ai";
 import ActiveRoom from "@/components/activeRoom";
+import Head from "next/head";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -42,75 +43,86 @@ const Home: NextPage = () => {
   ];
 
   return (
-    <main data-lk-theme="default">
-      {roomName && !Array.isArray(roomName) && preJoinChoices ? (
-        <>
-          <ActiveRoom
-            roomName={roomName}
-            userChoices={preJoinChoices}
-            onLeave={() => setPreJoinChoices(undefined)}
-            userId={session?.user.id as string}
-            selectedLanguage={selectedCode}
-          ></ActiveRoom>
-          <div
-            className="lk-prejoin"
-            style={{
-              width: "100%",
-            }}
-          >
-            <label className="flex items-center justify-center gap-2">
-              <span className="flex items-center space-x-2 text-center text-xs lg:text-sm">
-                <AiFillSetting />
-                <a>Switch Language</a>
-              </span>
+    <>
+      <Head>
+        <title>AudioWiz</title>
+        <meta name="description" content="AudioWiz" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
+      <main data-lk-theme="default">
+        {roomName && !Array.isArray(roomName) && preJoinChoices ? (
+          <>
+            <ActiveRoom
+              roomName={roomName}
+              userChoices={preJoinChoices}
+              onLeave={() => setPreJoinChoices(undefined)}
+              userId={session?.user.id as string}
+              selectedLanguage={selectedCode}
+            ></ActiveRoom>
+            <div
+              className="lk-prejoin"
+              style={{
+                width: "100%",
+              }}
+            >
+              <label className="flex items-center justify-center gap-2">
+                <span className="flex items-center space-x-2 text-center text-xs lg:text-sm">
+                  <AiFillSetting />
+                  <a>Switch Language</a>
+                </span>
+                <select
+                  className="lk-button"
+                  onChange={(e) => setSelectedCode(e.target.value)}
+                  defaultValue={selectedCode}
+                >
+                  {languageCodes.map((language) => (
+                    <option value={language.code}>{language.language}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          </>
+        ) : (
+          <div className="flex h-screen flex-col items-center justify-center">
+            <div className="lk-prejoin flex flex-col gap-3">
+              <div className="text-2xl font-bold">
+                Hey, {session?.user.name}!
+              </div>
+              <div className="text-sm font-normal">
+                You are joining{" "}
+                <span className="font-semibold">{roomName}</span>
+              </div>
+              <label>
+                <span>Choose your Language</span>
+              </label>
               <select
                 className="lk-button"
                 onChange={(e) => setSelectedCode(e.target.value)}
-                defaultValue={selectedCode}
               >
                 {languageCodes.map((language) => (
                   <option value={language.code}>{language.language}</option>
                 ))}
               </select>
-            </label>
-          </div>
-        </>
-      ) : (
-        <div className="flex h-screen flex-col items-center justify-center">
-          <div className="lk-prejoin flex flex-col gap-3">
-            <div className="text-2xl font-bold">Hey, {session?.user.name}!</div>
-            <div className="text-sm font-normal">
-              You are joining <span className="font-semibold">{roomName}</span>
             </div>
-            <label>
-              <span>Choose your Language</span>
-            </label>
-            <select
-              className="lk-button"
-              onChange={(e) => setSelectedCode(e.target.value)}
-            >
-              {languageCodes.map((language) => (
-                <option value={language.code}>{language.language}</option>
-              ))}
-            </select>
+            <PreJoin
+              onError={(err) =>
+                console.log("Error while setting up prejoin", err)
+              }
+              defaults={{
+                username: session?.user.name as string,
+                videoEnabled: true,
+                audioEnabled: true,
+              }}
+              onSubmit={(values) => {
+                console.log("Joining with: ", values);
+                setPreJoinChoices(values);
+              }}
+            ></PreJoin>
           </div>
-          <PreJoin
-            onError={(err) =>
-              console.log("Error while setting up prejoin", err)
-            }
-            defaults={{
-              username: session?.user.name as string,
-              videoEnabled: true,
-              audioEnabled: true,
-            }}
-            onSubmit={(values) => {
-              console.log("Joining with: ", values);
-              setPreJoinChoices(values);
-            }}
-          ></PreJoin>
-        </div>
-      )}
-    </main>
+        )}
+      </main>
+    </>
   );
 };
 
