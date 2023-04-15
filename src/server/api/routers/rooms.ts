@@ -30,7 +30,7 @@ export const roomsRouter = createTRPCRouter({
         },
       });
 
-      if (!roomExists) {
+      if (roomExists === null) {
         throw new Error("Room does not exist");
       }
 
