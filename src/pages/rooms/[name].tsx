@@ -181,8 +181,10 @@ const ActiveRoom = ({
         mimeType: "audio/webm",
       });
 
-      //create a websocket connection
-      const socket = new WebSocket("ws://localhost:4000");
+      const socket = new WebSocket(
+        "wss://api.deepgram.com/v1/listen?model=nova",
+        ["token", process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY!]
+      );
       socket.onopen = () => {
         console.log({ event: "onopen" });
         mediaRecorder.addEventListener("dataavailable", async (event) => {
