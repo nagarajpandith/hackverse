@@ -70,7 +70,7 @@ const ActiveRoom = ({
     }[]
   >([]);
 
-  const pusherMutation = api.pusher.send.useMutation();
+  const pusherMutation = api.pusher.sendTranscript.useMutation();
   useEffect(() => {
     console.log("Running transcription");
     navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
