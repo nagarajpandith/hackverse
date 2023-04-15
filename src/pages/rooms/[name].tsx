@@ -144,9 +144,13 @@ const ActiveRoom = ({
 
   const router = useRouter();
   const { region, hq } = router.query;
+  const setQueue = (transcribed: string) => {
+    if (transcribed === transcription) {
+      return;
+    }
 
-  //   const liveKitUrl = useServerUrl(region as string | undefined);
-
+    setTranscription(transcription);
+  };
   const roomOptions = useMemo((): RoomOptions => {
     return {
       videoCaptureDefaults: {
@@ -169,7 +173,10 @@ const ActiveRoom = ({
 
   const [transcription, setTranscription] = useState("");
   const socketRef = useRef<WebSocket | null>(null);
-
+  const socket = new WebSocket("wss://api.deepgram.com/v1/listen?model=nova", [
+    "token",
+    process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY!,
+  ]);
   useEffect(() => {
     console.log("Running transcription");
 
@@ -181,10 +188,6 @@ const ActiveRoom = ({
         mimeType: "audio/webm",
       });
 
-      const socket = new WebSocket(
-        "wss://api.deepgram.com/v1/listen?model=nova",
-        ["token", process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY!]
-      );
       socket.onopen = () => {
         console.log({ event: "onopen" });
         mediaRecorder.addEventListener("dataavailable", async (event) => {
@@ -200,7 +203,7 @@ const ActiveRoom = ({
         const transcript = received.channel?.alternatives[0].transcript;
         if (transcript) {
           console.log(transcript);
-          setTranscription(transcript);
+          setQueue(transcript);
         }
       };
 

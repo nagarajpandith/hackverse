@@ -51,6 +51,7 @@ model User {
   sessions      Session[]
   Room          Room[]
   Participant   Participant[]
+  Transcript    Transcript[]
 }
 
 model VerificationToken {
@@ -70,6 +71,7 @@ model Room {
   OwnerId     String
   Owner       User          @relation(fields: [OwnerId], references: [id], onDelete: Cascade)
   summary     String?       @db.Text
+  Transcript  Transcript[]
   Participant Participant[]
 
   @@index([OwnerId])
@@ -86,4 +88,17 @@ model Participant {
   @@id([UserId, RoomName])
   @@index([UserId])
   @@index([RoomName])
+}
+
+model Transcript {
+  Room          Room?    @relation(fields: [roomName], references: [name])
+  roomName      String?
+  transcription String?  @db.Text
+  createdAt     DateTime @default(now())
+  id            Int      @id @default(autoincrement())
+  userId        String?
+  User          User?    @relation(fields: [userId], references: [id])
+
+  @@index([roomName])
+  @@index([userId])
 }
