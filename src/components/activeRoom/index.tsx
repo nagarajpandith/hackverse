@@ -1,11 +1,16 @@
 import { DebugMode } from "@/lib/Debug";
 import { api } from "@/utils/api";
+import speakOut from "@/utils/speakOut";
 import {
   LiveKitRoom,
   LocalUserChoices,
   VideoConference,
   formatChatMessageLinks,
 } from "@livekit/components-react";
+import { setCORS } from "google-translate-api-browser";
+
+const translate = setCORS("https://corsanywhere.herokuapp.com/");
+
 import {
   LogLevel,
   Room,
@@ -69,6 +74,10 @@ const ActiveRoom = ({
       isFinal: boolean;
     }[]
   >([]);
+  const [caption, setCaption] = useState({
+    sender: "",
+    message: "",
+  });
 
   const pusherMutation = api.pusher.sendTranscript.useMutation();
   useEffect(() => {
@@ -103,9 +112,8 @@ const ActiveRoom = ({
       socket.onmessage = (message) => {
         const received = message && JSON.parse(message?.data);
         const transcript = received.channel?.alternatives[0].transcript;
-        if (transcript) {
-          console.log(transcript);
-          setTranscription(transcript);
+
+        if (transcript !== "" && transcript !== undefined) {
           pusherMutation.mutate({
             message: transcript,
             roomName: roomName,
@@ -125,6 +133,37 @@ const ActiveRoom = ({
       socketRef.current = socket;
     });
   }, [selectedLanguage]);
+  useEffect(() => {
+    async function translateText() {
+      console.info("transcriptionQueue", transcriptionQueue);
+      if (transcriptionQueue.length > 0) {
+        const res = await translate(transcriptionQueue[0]?.message as string, {
+          // @ts-ignore
+          to: selectedLanguage.split("-")[0],
+        });
+        setCaption({
+          message: res.text,
+          sender: transcriptionQueue[0]?.sender as string,
+        });
+        const isEmpty = transcriptionQueue.length === 0;
+        speakOut(res.text as string, isEmpty);
+        setTranscriptionQueue((prev) => prev.slice(1));
+      }
+    }
+    translateText();
+
+    // Hide the caption after 5 seconds
+    const timer = setTimeout(() => {
+      setCaption({
+        message: "",
+        sender: "",
+      });
+    }, 5000);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [transcriptionQueue]);
   useEffect(() => {
     const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY as string, {
       cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER as string,
@@ -163,7 +202,7 @@ const ActiveRoom = ({
         >
           <div className="closed-captions-wrapper z-50">
             <div className="closed-captions-container">
-              <div className="closed-captions-text">{transcription}</div>
+              <div className="closed-captions-text">{caption.message}</div>
             </div>
           </div>
           <VideoConference chatMessageFormatter={formatChatMessageLinks} />
