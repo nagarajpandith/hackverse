@@ -10,6 +10,7 @@ import Image from "next/image";
 import Head from "next/head";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
+import Loader from "@/components/loader";
 
 function ConnectionTab() {
   const { data: session, status } = useSession();
@@ -27,7 +28,7 @@ function ConnectionTab() {
     }
   };
 
-  if (status === "loading") return <div>Loading...</div>;
+  if (status === "loading") return <Loader />;
 
   return (
     <>
@@ -80,7 +81,7 @@ function ConnectionTab() {
               <div className="flex flex-col items-center justify-center space-y-4 lg:flex-row lg:space-x-4 lg:space-y-0">
                 <button onClick={createRoomHandler} className="lk-button h-fit">
                   {roomLoading ? (
-                    <div>Loading...</div>
+                    <Loader />
                   ) : (
                     <>
                       <AiOutlineVideoCameraAdd />

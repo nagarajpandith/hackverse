@@ -6,13 +6,15 @@ import { AiFillSetting } from "react-icons/ai";
 import { useState } from "react";
 import Footer from "@/components/footer";
 import Head from "next/head";
+import Loader from "@/components/loader";
+import FullScreenLoader from "@/components/fullScreenLoader";
 
 function profile() {
   const { data: session, status } = useSession();
   const { data: rooms, isLoading, error } = api.rooms.getRoomsByUser.useQuery();
   const [selectedCode, setSelectedCode] = useState("en-US");
 
-  if (status === "loading") return <div>Loading...</div>;
+  if (status === "loading") return <FullScreenLoader />;
   if (!session && status === "unauthenticated") return signIn("google");
 
   const ownedRooms =
@@ -75,8 +77,10 @@ function profile() {
         </label>
 
         <div className="mt-5 flex flex-col items-center justify-center">
-          <a className="text-lg font-bold text-secondary">Your Rooms</a>
-          {isLoading && <div>Loading...</div>}
+          <a className="border-b border-tertiary text-lg font-bold text-secondary">
+            Your Rooms
+          </a>
+          {isLoading && <Loader />}
           {ownedRooms.length === 0 && (
             <p className="mt-2 text-xs font-light text-white">
               You haven't started a room yet
@@ -92,7 +96,7 @@ function profile() {
         </div>
 
         <div className="mt-5 flex flex-col items-center justify-center">
-          <a className="text-lg font-bold text-secondary">
+          <a className="border-b border-tertiary text-lg font-bold text-secondary">
             Rooms you are a part of
           </a>
 

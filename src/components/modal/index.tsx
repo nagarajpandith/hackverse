@@ -3,6 +3,7 @@ import { api } from "@/utils/api";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import Tabs from "../tabs";
+import Loader from "../loader";
 
 type ModalProps = {
   setIsOpen: Dispatch<SetStateAction<boolean>>;
@@ -61,7 +62,7 @@ const Modal: FunctionComponent<ModalProps> = ({
                 </Dialog.Title>
                 <div className="">
                   {isLoading ? (
-                    <div>Loading....</div>
+                    <Loader />
                   ) : data ? (
                     <div className="text-sm text-gray-100 text-opacity-50">
                       {data.output[0].contents.length > 1 && (

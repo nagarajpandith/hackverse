@@ -6,6 +6,7 @@ import { signIn, useSession } from "next-auth/react";
 import { AiFillSetting } from "react-icons/ai";
 import ActiveRoom from "@/components/activeRoom";
 import Head from "next/head";
+import FullScreenLoader from "@/components/fullScreenLoader";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -16,7 +17,7 @@ const Home: NextPage = () => {
   >(undefined);
 
   const [selectedCode, setSelectedCode] = useState("en-US");
-  if (status === "loading") return <div>Loading...</div>;
+  if (status === "loading") return <FullScreenLoader />;
   if (!session) signIn("google");
 
   const languageCodes = [

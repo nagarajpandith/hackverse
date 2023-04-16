@@ -21,6 +21,8 @@ import {
 import { useRouter } from "next/router";
 import Pusher from "pusher-js";
 import { useEffect, useMemo, useRef, useState } from "react";
+import Loader from "../loader";
+import FullScreenLoader from "../fullScreenLoader";
 type ActiveRoomProps = {
   userChoices: LocalUserChoices;
   roomName: string;
@@ -194,7 +196,7 @@ const ActiveRoom = ({
     };
   }, []);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <FullScreenLoader />;
   if (error) router.push("/");
 
   return (

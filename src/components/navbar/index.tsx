@@ -6,6 +6,7 @@ import { useState } from "react";
 import { signIn, signOut } from "next-auth/react";
 import { Session } from "next-auth";
 import { FcGoogle } from "react-icons/fc";
+import Loader from "../loader";
 
 const Navbar = ({
   status,
@@ -82,7 +83,7 @@ const Navbar = ({
 
             <Link href="/profile">
               {status === "loading" ? (
-                <div>Loading...</div>
+                <Loader />
               ) : status === "authenticated" ? (
                 <Image
                   src={session?.user.image as string}
@@ -135,7 +136,7 @@ const Navbar = ({
 
             <Link href="/profile">
               {status === "loading" ? (
-                <div>Loading...</div>
+                <Loader />
               ) : status === "authenticated" ? (
                 <Image
                   src={session?.user.image as string}
