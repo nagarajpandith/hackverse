@@ -1,43 +1,46 @@
 import axios from "axios";
 import { transliterate } from "transliteration";
 
-// let lastSpokenText = "";
+let currentAudio: {
+  audio: HTMLAudioElement | null;
+  text: string;
+} = {
+  audio: null,
+  text: "",
+};
 
-// const speakOut = async (text: string, isEmpty: boolean, lang?: string) => {
-//   if (text === lastSpokenText) {
-//     console.log("Skipping speaking text again:", text);
-//     return;
-//   }
+//check if the text is somehow relsted to old text
+function isRelatedToLastSpokenText(text: string, lastSpokenText: string) {
+  //find no of words common in both the strings
+  const words = text.split(" ");
+  const lastSpokenWords = lastSpokenText.split(" ");
+  const commonWords = words.filter((word) => lastSpokenWords.includes(word));
+  const commonWordsCount = commonWords.length;
+  const totalWordsCount = words.length + lastSpokenWords.length;
+  const commonWordsPercentage = (commonWordsCount / totalWordsCount) * 100;
+  return commonWordsPercentage > 50;
+}
 
-//   if (isEmpty) lastSpokenText = "";
+export default async (text: string, isEmpty: boolean, lang?: string) => {
+  console.log("speakOut function called with text:", text);
 
-//   console.log("speakOut function called with text:", text);
+  let englishText = transliterate(text);
+  const url = `/api/speech?text=${encodeURIComponent(englishText)}`;
+  const audio = new Audio(url);
 
-//   let speech = new SpeechSynthesisUtterance();
-//   speech.lang = lang || "en-US";
-
-//   let englishText = transliterate(text);
-//   speech.text = englishText;
-
-//   console.log("SpeechSynthesisUtterance:", speech);
-//   speechSynthesis.speak(speech);
-
-//   lastSpokenText = text;
-// };
-
-// export default speakOut;
-
-let lastSpokenText = "";
-
-export default (text: string, isEmpty: boolean, lang?: string) => {
-  if (text === lastSpokenText) {
-    console.log("Skipping speaking text again:", text);
-    return;
+  // Pause the current audio if there is one
+  if (
+    !isRelatedToLastSpokenText(text, currentAudio.text) &&
+    currentAudio.audio
+  ) {
+    currentAudio.audio.pause();
   }
 
-  if (isEmpty) lastSpokenText = "";
-  const url = `/api/speech?text=${encodeURIComponent(text)}`;
-  const audio = new Audio(url);
+  // Play the new audio
   audio.play();
-  lastSpokenText = text;
+
+  // Set the new audio as the current one
+  currentAudio = { audio, text };
+
+  currentAudio.text = text;
 };

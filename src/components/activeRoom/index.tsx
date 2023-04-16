@@ -123,7 +123,13 @@ const ActiveRoom = ({
             roomName: roomName,
             isFinal: true,
           });
-          setTranscription(transcript);
+          if (
+            !(
+              transcript.toLowerCase() === "is" ||
+              transcription.toLowerCase() === "so"
+            )
+          )
+            setTranscription(transcript);
         }
       };
 
