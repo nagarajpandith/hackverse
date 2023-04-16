@@ -6,7 +6,7 @@ const handler: NextApiHandler = async (req, res) => {
     const { text } = req.query;
     const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(
       text as string
-    )}&tl=en&client=tw-ob`;
+    )}&tl=hi&client=tw-ob`;
     const response = await fetch(url, {
       headers: {
         Referer: "http://translate.google.com/",
