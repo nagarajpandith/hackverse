@@ -28,21 +28,25 @@ export const pusherRouter = createTRPCRouter({
           senderId: user.id,
         }
       );
-      await ctx.prisma.transcript.create({
-        data: {
-          transcription: message,
-          Room: {
-            connect: {
-              name: input.roomName,
+      try {
+        await ctx.prisma.transcript.create({
+          data: {
+            transcription: message,
+            Room: {
+              connect: {
+                name: input.roomName,
+              },
+            },
+            User: {
+              connect: {
+                id: user.id,
+              },
             },
           },
-          User: {
-            connect: {
-              id: user.id,
-            },
-          },
-        },
-      });
+        });
+      } catch (error) {
+        console.error(error);
+      }
       return response;
     }),
 });

@@ -11,6 +11,7 @@ import Head from "next/head";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import Loader from "@/components/loader";
+import About from "@/components/about";
 
 function ConnectionTab() {
   const { data: session, status } = useSession();
@@ -39,7 +40,7 @@ function ConnectionTab() {
       </Head>
       <Navbar status={status} session={session} />
       <div className="isolate overflow-x-hidden">
-        <div className="flex h-screen w-screen flex-col items-center justify-center space-y-4 p-5 text-center md:flex-row">
+        <div className="flex h-screen w-screen flex-col items-center justify-center space-y-4 p-5 text-center">
           <div className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden opacity-90 blur-3xl sm:top-[-20rem]">
             <svg
               className="relative left-[calc(50%-11rem)] -z-10 h-[21.1875rem] max-w-none -translate-x-1/2 rotate-[30deg] sm:left-[calc(50%-30rem)] sm:h-[42.375rem]"
@@ -68,7 +69,7 @@ function ConnectionTab() {
             </svg>
           </div>
 
-          <div className="w-full max-w-md space-y-4">
+          <div className="w-full h-screen max-w-md space-y-4">
             <div className="flex items-center justify-center space-x-2">
               <div className="flex h-10 w-10 items-center justify-center lg:h-20 lg:w-20">
                 <Image src="/logo.png" alt="Logo" width={100} height={100} />
@@ -77,6 +78,7 @@ function ConnectionTab() {
                 AudioWiz
               </a>
             </div>
+
             <div>
               <div className="flex flex-col items-center justify-center space-y-4 lg:flex-row lg:space-x-4 lg:space-y-0">
                 <button onClick={createRoomHandler} className="lk-button h-fit">
@@ -93,6 +95,8 @@ function ConnectionTab() {
               </div>
             </div>
           </div>
+
+          {/* <About /> */}
 
           <div className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden opacity-90 blur-3xl sm:top-[calc(100%-30rem)]">
             <svg

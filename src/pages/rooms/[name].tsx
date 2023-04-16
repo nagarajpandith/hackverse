@@ -92,7 +92,7 @@ const Home: NextPage = () => {
               </div>
               <div className="text-sm font-normal">
                 You are joining{" "}
-                <span className="font-semibold">{roomName}</span>
+                <span className="font-semibold gradient-text">{roomName}</span>
               </div>
               <label>
                 <span>Choose your Language</span>
