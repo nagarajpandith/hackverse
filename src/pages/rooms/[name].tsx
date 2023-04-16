@@ -3,7 +3,7 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { signIn, useSession } from "next-auth/react";
-import { AiFillSetting } from "react-icons/ai";
+import { AiFillSetting, AiOutlineCopy } from "react-icons/ai";
 import ActiveRoom from "@/components/activeRoom";
 import Head from "next/head";
 import FullScreenLoader from "@/components/fullScreenLoader";
@@ -92,7 +92,13 @@ const Home: NextPage = () => {
               </div>
               <div className="text-sm font-normal">
                 You are joining{" "}
-                <span className="font-semibold gradient-text">{roomName}</span>
+                <span className="gradient-text font-semibold">{roomName}</span>
+                <AiOutlineCopy
+                  onClick={() => {
+                    navigator.clipboard.writeText(roomName as string);
+                  }}
+                  className="ml-1 inline-block"
+                />
               </div>
               <label>
                 <span>Choose your Language</span>
