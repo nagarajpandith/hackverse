@@ -84,6 +84,7 @@ const ActiveRoom = ({
   });
 
   const pusherMutation = api.pusher.sendTranscript.useMutation();
+  const [ myTranscripts , setMyTranscripts ] = useState<string[]>([])
   useEffect(() => {
     console.log("Running transcription");
     navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
@@ -113,16 +114,18 @@ const ActiveRoom = ({
         mediaRecorder.start(1000);
       };
 
-      socket.onmessage = (message) => {
+      socket.onmessage = async (message) => {
         const received = message && JSON.parse(message?.data);
         const transcript = received.channel?.alternatives[0].transcript;
 
         if (transcript !== "" && transcript !== undefined) {
-          pusherMutation.mutate({
+          if(myTranscripts.includes(transcript)) return
+          await pusherMutation.mutate({
             message: transcript,
             roomName: roomName,
             isFinal: true,
           });
+          setMyTranscripts((prev) => [...prev, transcript])
           if (
             !(
               transcript.toLowerCase() === "is" ||
