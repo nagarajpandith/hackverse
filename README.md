@@ -1,28 +1,79 @@
-# Create T3 App
+# AudioWiz
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+### Multilingual Live Video conferencing
 
-## What's next? How do I make an app with this?
+# Description
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+Live Video Conferencing app which transcribes, translates and speaks out the text to all users on the call in realtime. Also provides with the meeting minutes/summary of the meeting.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+# Tech Stack
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+- NextJS
+- Typescript
+- Livekit
+- Pusher
+- Deepgram Nova AI
+- tRPC
+- TailwindCSS
+- Prisma
+- MySQL
 
-## Learn More
+# Installation Steps
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+1. ```bash
+   git clone https://github.com/nagarajpandith/hackverse
+   ```
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+2. cd hackverse
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+3. ```bash
+   npm i
+   npm run dev
+   ```
 
-## How do I deploy this?
+Note: Populate env vars by copying the .env.example file
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+# Libraries and Dependencies
+
+```json
+"dependencies": {
+"@headlessui/react": "^1.7.14",
+"@livekit/components-react": "^0.7.3",
+"@livekit/components-styles": "^0.3.1",
+"@next-auth/prisma-adapter": "^1.0.5",
+"@prisma/client": "^4.11.0",
+"@tanstack/react-query": "^4.28.0",
+"@trpc/client": "^10.18.0",
+"@trpc/next": "^10.18.0",
+"@trpc/react-query": "^10.18.0",
+"@trpc/server": "^10.18.0",
+"@vitalets/google-translate-api": "^9.1.0",
+"axios": "^1.3.5",
+"google-translate-api-browser": "^3.0.1",
+"livekit-client": "^1.7.1",
+"livekit-server-sdk": "^1.1.4",
+"next": "^13.2.4",
+"next-auth": "^4.21.0",
+"openai": "^3.2.1",
+"pusher": "^5.1.2",
+"pusher-js": "^8.0.2",
+"react": "18.2.0",
+"react-dom": "18.2.0",
+"react-icons": "^4.8.0",
+"superjson": "1.12.2",
+"transliteration": "^2.3.5",
+"zod": "^3.21.4"
+},
+```
+
+# Declaration of Previous Work
+
+Previously a Meet app architecture was built using Livekit and our implementation of text to speech using browser's native API failed, as it was largely dependent on client's device and browser. For eg: It was only transcribing English properly and not working on Mobile devices and specific browsers like Brave with known issues for native APIs.
+
+In the 24 hours, we addressed and solved 3 major problems:
+
+- Latency was reduced from 10-15 seconds to 4-5 seconds and sometimes even 3 seconds.
+- Working on all browsers and does not rely on any browser specific APIs
+- Accuracy of transcriptions were innacurate leading to higher error rate in translated texts as well. We addressed this by using Deepgram's Nova AI which is a state of the art transcription engine.
+- We also added a feature to summarize user's meeting and provide it in their native language along with the transcriptions.
+- We also implemented a feature to change the language in runtime during the meeting.
